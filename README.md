@@ -18,9 +18,13 @@ pip install expando
 # install twine
 python3 -m pip install twine
 
-update setup.py version
+# update setup.py version
 python setup.py sdist bdist_wheel
 twine upload dist/*
-git tag -a 0.1.4 -m "Release 0.1.4"
+export VERSION=0.5.1
+git tag -a 0.5.1 -m "Release $VERSION"
+git add .
+git commit -m "Release $VERSION"
 git push origin --tags
+git push
 ```

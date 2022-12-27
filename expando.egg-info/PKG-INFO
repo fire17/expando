@@ -1,0 +1,16 @@
+Metadata-Version: 2.1
+Name: expando
+Version: 0.5.1
+Summary: Use expando like a dictionary or an object
+Home-page: https://github.com/fire17/expando
+Author: Tami
+Author-email: fire17@gmail.com
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown
+
+Dynamically create attributes on the fly. Use expando like a dictionary or an object.
+

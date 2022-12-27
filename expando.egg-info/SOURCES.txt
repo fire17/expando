@@ -1,0 +1,8 @@
+README.md
+expando.py
+setup.py
+expando.egg-info/PKG-INFO
+expando.egg-info/SOURCES.txt
+expando.egg-info/dependency_links.txt
+expando.egg-info/entry_points.txt
+expando.egg-info/top_level.txt

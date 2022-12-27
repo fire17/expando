@@ -1,0 +1,3 @@
+[console_scripts]
+expando = xo:xoxo = xo:xo
+
