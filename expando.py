@@ -444,7 +444,13 @@ class Expando(dict):
 	def _setValue(self, val, skipInner=False):
 		# print(self._id, " SETTING VALUE TO " + str(val))
 		
-		if skipInner or self.set(val):
+		if isinstance(val, dict):
+			# self._recursiveImportDict(_val)
+			Expando._recursiveImportDict(self, val)
+			# self._recursiveImportDict(_val)
+			val = None
+
+		if True or skipInner or self.set(val):
 			# set hook
 			self[Expando._valueArg] = val
 			object.__setattr__(self, "value", val)
@@ -580,10 +586,22 @@ class Expando(dict):
 			# 	pass
 		# return self
 
-	def delete(self, __name: str) -> None:
-		return self.__delattr__(__name)
+
+	def _delete(self, __name: None):
+		if __name is None:
+			# Call the overloaded delete function
+			self._delete_(element=self._id)
+
+			del (self)
+		else:
+			return self.__delattr__(__name)
 
 	def __delattr__(self, __name: str) -> None:
+		# Call the overloaded delete function
+		if self._overloading_():
+			self._delete_(element=self._id+"/"+__name)
+
+
 		if __name in self:
 			final = self.pop(__name)
 			# self._updateSubscribers_()
@@ -630,7 +648,8 @@ class Expando(dict):
 			for func in other:
 				res = self.subscribe(func)
 			# return res
-		self.subscribe(other)
+		else:
+			self.subscribe(other)
 		# print("@= @@@@@@@@@@@@",other)
 		return self.value
 
@@ -998,6 +1017,14 @@ class Expando(dict):
 		# 	print(type(kwargs),type(a),"KKKKKKKKK,", a,"=", kwargs[a])
 		# print(type(vars),type(*vars),"xxxxxxxxAAAAAAAAAAAAAAA,", vars)
 
+		if "fetch" in kwargs and kwargs["fetch"] == True and self._overloading_():
+			print("xxxxxxx FFFFFFFFFFFFFFFFFFFFFFF fetching")
+			read = self._read_()
+			kwargs.pop("fetch")
+			if read != self:
+				value = read
+				self._setValue(value)
+
 		if self._id.endswith("learn"):
 			newDict = {}
 			appendToLearn = []
@@ -1039,7 +1066,9 @@ class Expando(dict):
 					self._parent.learned += [a]
 				else:
 					print(" ::: WTF")
-					self[Expando._valueArg](ref=True).append(a)
+					# self[Expando._valueArg](ref=True).append(a)
+					self[self._valueArg](ref=True).append(a)
+
 				print(f" ::: New Element xo.{owner.strip('/')}.learned = {a}")
 
 			return self._GetXO(owner)
@@ -1197,9 +1226,48 @@ class Expando(dict):
 		return self._id
 		# return self.update({**dict(self), **kwargs})
 
-	def update(self, entries, *vars, **kwargs):
+	def _overloading_(self, *args, **kwargs):
+		# print(" ::: THIS NEEDS TO BE OVERLOADED TO RETURN TRUE::: overloading ")
+		return False
+
+	def _checkIfExist_(self, *args, **kwargs):
+		print(" ::: THIS CAN BE OVERLOADED ::: checkIfExist ",
+		      type(self), self._id, args, kwargs)
+		return False
+
+	def _read_(self, *args, **kwargs):
+		print(" ::: THIS CAN BE OVERLOADED ::: read ",
+		      type(self), self._id, args, kwargs)
+		return self
+		# read = self.read()
+		# if read != self
+		# 	value = read
+
+	def _create_(self, value=None, *args, **kwargs):
+		print(" ::: THIS CAN BE OVERLOADED ::: create ",
+		      type(self), self._id, value, args, kwargs)
+		# return self
+
+	def _update_(self, value=None, *args, **kwargs):
+		print(" ::: THIS CAN BE OVERLOADED ::: update ",
+		      type(self), self._id, value, args, kwargs)
+
+	def _subscribe_to_changes_(self, *args, **kwargs):
+		print(" ::: THIS CAN BE OVERLOADED ::: subscribe_to_changes ",
+		      type(self), self._id, args, kwargs)
+		# return self
+
+	def _delete_(self, element=None, *args, **kwargs):
+		idToDelete = self._id if element == None else element
+		print(" ::: THIS CAN BE OVERLOADED ::: delete ",
+		      type(self), self._id, idToDelete, args, kwargs)
+		return True
+		# return if deleted succesfully
+
+	# this was used to update the value of the expando, deprecated. use xo(dict) instead
+	def _update_entries(self, entries, *vars, **kwargs):
 		newData = {}
-		# print(";;;;;;;;;;;;;:::", vars, kwargs)
+		print(";;;;;;;;;;;;;:::", entries, vars, kwargs)
 		for d in vars:
 			if "dict" in str(type(d)):
 				# print(";;;;;;;;;;;;;", d)
@@ -1411,7 +1479,9 @@ class Expando(dict):
 		# return json.dumps(json.loads(str(self)), indent=4)
 
 	#iiiiiiiiiiiiiiii
+	_init_done_ = False
 	def __init__(self, _val=None, _id=None, _parent=None,_rootName=None, _behaviors={}, _xoT_=None, *vars, **entries):
+		# print(":::::::::::::::IIIIIIIIIIIII::::::::::::::",type(self),_id, _xoT_)
 		# dict.__init__(self,**entries)
 		# dict.__init__(self, *vars, **entries) #
 		# if isinstance(_val, dict):
@@ -1461,6 +1531,10 @@ class Expando(dict):
 
 
 		self._id = _id if _id is not None else Expando._rootName
+		# self._id = _id if _id is not None else None
+		# if self._id is None:
+		# 	self._id = self._rootName
+
 		self._name = _id.split("/")[-1]
 		
 		self._xoT_ = type(self) if _xoT_ is None else _xoT_
@@ -1524,17 +1598,55 @@ class Expando(dict):
 
 		# self[Expando._valueArg] = val
 		# self[Expando._valueArg] = val
-		if _val is not None:
-			# self[Expando._valueArg] = _val # set hook
-			if isinstance(_val, dict):
-				# self._recursiveImportDict(_val)
-				Expando._recursiveImportDict(self,_val)
-				# self._recursiveImportDict(_val)
-				_val = None
+		# if _val is not None:
+		# 	# self[Expando._valueArg] = _val # set hook
+		# 	if isinstance(_val, dict):
+		# 		# self._recursiveImportDict(_val)
+		# 		Expando._recursiveImportDict(self,_val)
+		# 		# self._recursiveImportDict(_val)
+		# 		_val = None
+		# 	else:
+		# 		self._setValue(_val)
+		# 	# self[Expando._valueArg] = _val # set hook
+		# self.update(entries)
+
+		if self._overloading_():
+			# print("overloading!!!!!!!!!!!", type(self), self._id)
+		
+
+			if not self._checkIfExist_():
+				# calling create event
+				self._create_(_val)
 			else:
+				if _val is None:
+					# calling read event
+					# res = self.read()
+					read = self._read_()
+					if read != self:
+						_val = read
+						# self._setValue(value)
+						# __setvalue(self, value)
+						
+			if _val is not None:
+				# print("@@@@@@@@@@@@")
 				self._setValue(_val)
-			# self[Expando._valueArg] = _val # set hook
-		self.update(entries)
+
+				
+				# print("11111111111111")
+				# self._update_(_val)
+				# This happens when setting value
+
+			self._subscribe_to_changes_(self)
+		else:
+			if _val is not None:
+				self._setValue(_val)
+				# this will call _update_() if it exists
+
+		# self._update_entries({**entries, **{"value": _val}})
+		# self._update_entries(entries)
+
+		self._init_done_ = True
+		pass
 		#### self.xxx.yyy.zzz = 13
 		#### updateID = Thread(target = self.makeID, args = [list,])
 		#### updateID.start()
@@ -1745,13 +1857,16 @@ class Expando(dict):
 		# print("!!!!!!!!!!!!!!!", name)
 		return self[name]
 
-	def get(self):
-		return "_NotOverloaded_"
+	# def get(self):
+	# 	return "_NotOverloaded_"
 
 	def getHook(self, item=None, *args, **kwargs):
 		# THIS CAN BE OVERLOADED BY SUBCLASS
-		res = self.get()
-		if res == "_NotOverloaded_":
+		# print("RRRGGGGGGGGGGGGGGGGGG",self._id,type(self),type(super()))
+
+		# res = self.get()
+
+		if True: # res == "_NotOverloaded_":
 			if item is not None:
 				return super().get(item, *args, **kwargs)
 			else:
@@ -1941,7 +2056,23 @@ class Expando(dict):
 		# self[name] = res
 		# self[name]._setValue(res)
 		object.__setattr__(self, name, res)
-		
+		if self._init_done_ and self._overloading_():
+			runUpdate = False if name != self._valueArg else True
+			updateTarget = self
+			if (name not in self._hiddenAttr and not name.startswith("_")):
+				# print("222222222222222222222",name, name in self)
+				# res._update_(value)
+				updateTarget = res
+				runUpdate = True
+			if runUpdate:
+				# print("......111111111", value)
+				updateTarget._update_(value)
+
+			# elif name == self._valueArg:
+			# 	print("5555555555555555555555")
+			# 	self._setValue(value)
+			# else:
+			# 	pass
 		# if redo:
 		# 	return self.__setattr__(name=name, value=value)
 		return super().__setitem__(name, value)
