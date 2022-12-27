@@ -1,6 +1,7 @@
 README.md
 expando.py
 setup.py
+xo.py
 expando.egg-info/PKG-INFO
 expando.egg-info/SOURCES.txt
 expando.egg-info/dependency_links.txt

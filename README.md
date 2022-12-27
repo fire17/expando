@@ -6,27 +6,48 @@ Dynamic Dictionary Object Wrapper
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/expando)](http://cran.r-project.org/package=expando)
 [![Downloads](http://cranlogs.r-pkg.org/badges/expando)](http://cran.rstudio.com/package=expando) -->
 
-## Installation
+## Installation/Update
 
 ```python
-pip install expando
+python3 -m pip install --upgrade expando
+```
+
+## import
+
+```python
+from xo import xo, Expando
+# or
+from xo import *
+```
+
+## Usage
+```python
+
+# Use xo as your root object
+xo.foo.bar(17).baz.plus.something = lambda *a, **kv : (f"Hello Expando! {xo.foo.bar.value}" , a, kv)
+print(xo.foo.bar.baz.plus.something())
+
+# Create a new Expando object
+myStore = Expando()
 ```
 
 ## to reupload to pip after edits (internal use only)
 ```
-# Copy/edit setup.py
 # install twine
-python3 -m pip install twine
+python3 -m pip install twine 
+# Skip if you have it already
 
+export VERSION=0.5.3
+# Copy/edit setup.py
 # update setup.py version
-python setup.py sdist bdist_wheel
+python3 setup.py sdist bdist_wheel
 twine upload dist/*
-export VERSION=0.5.1
-git tag -a $VERSION -m "Release $VERSION"
+
 ```
 ```
 # make sure you'd like to commit all changes
 git add . 
+git tag -a $VERSION -m "Release $VERSION"
 git commit -m "Release $VERSION"
 git push origin --tags
 git push

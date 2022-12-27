@@ -2,8 +2,8 @@ from setuptools import setup
 
 setup(
     name="expando",
-    version="0.5.1",
-    py_modules=["expando"],
+    version="0.5.3",
+    py_modules=["expando","xo"],
     install_requires=[],
     author="Tami",
     author_email="fire17@gmail.com",
@@ -18,8 +18,8 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "expando = xo:xo"
-            "xo = xo:xo"
+            "xo = xo:main",
+            "expando = xo:main"
         ]
     }
 )

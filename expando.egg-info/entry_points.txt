@@ -1,3 +1,4 @@
 [console_scripts]
-expando = xo:xoxo = xo:xo
+expando = xo:main
+xo = xo:main
 
