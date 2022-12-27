@@ -22,8 +22,11 @@ python3 -m pip install twine
 python setup.py sdist bdist_wheel
 twine upload dist/*
 export VERSION=0.5.1
-git tag -a 0.5.1 -m "Release $VERSION"
-git add .
+git tag -a $VERSION -m "Release $VERSION"
+```
+```
+# make sure you'd like to commit all changes
+git add . 
 git commit -m "Release $VERSION"
 git push origin --tags
 git push
