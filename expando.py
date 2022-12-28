@@ -606,7 +606,7 @@ class Expando(dict):
 	def __delattr__(self, __name: str) -> None:
 		# Call the overloaded delete function
 		if self._overloading_():
-			self._delete_(element=self._id+"/"+__name)
+			self._delete_(element=__name)
 
 
 		if __name in self:
@@ -1667,7 +1667,7 @@ class Expando(dict):
 		# self._update_entries(entries)
 
 		self._init_done_ = True
-		print(":::::::::::::::::::::::::::::::::::::::::", self._id, self._init_done_)
+		# print(":::::::::::::::::::::::::::::::::::::::::", self._id, self._init_done_)
 		pass
 		#### self.xxx.yyy.zzz = 13
 		#### updateID = Thread(target = self.makeID, args = [list,])
@@ -2096,13 +2096,13 @@ class Expando(dict):
 				# skip = True
 			else:
 				skip = True
-				print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", name, self._id,"skip:", skipUpdate,"value:", value,"init_done:", self._init_done_)
+				# print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", name, self._id,"skip:", skipUpdate,"value:", value,"init_done:", self._init_done_)
 				if not skipUpdate and (value is not None or self._init_done_ == True and "_has_value" in self and self._has_value): #and False:
-					print("$$$$$$$$$")
+					# print("$$$$$$$$$")
 					self._has_value = True
 					updateTarget._update_(value)
-					print("$$$$$$$$$")
-				print("!!!!!!!")
+					# print("$$$$$$$$$")
+				# print("!!!!!!!")
 				# time.sleep(1)
 
 		
