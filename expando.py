@@ -1010,7 +1010,7 @@ class Expando(dict):
 
 	def __call__(self, *args, **kwargs):
 		# print(Expando.__call__ in self._behaviors)
-		print("CCCCCCCCCCCCC",self._id, self.value,args,kwargs)
+		# print("CCCCCCCCCCCCC",self._id, self.value,args,kwargs)
 		# behave = False
 		# if behave:
 		# 	if "_skip_overload" not in kwargs or kwargs["_skip_overload"] == False:
