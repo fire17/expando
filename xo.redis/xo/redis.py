@@ -1,27 +1,68 @@
 # from xo import *
 import time
+import traceback
 from unittest import skip
-from xo import Expando
-import redis
+from expando import Expando
+from redis import Redis as RedisClient
+xo = Expando()
+
+# import xo
 import dill as pk
 
+defaultRedisConfig = {
+	"host" : "0.0.0.0",
+	"port" : 6379,
+}
 
-class Redis(Expando):
+# TODO: Get host and port from config / env / args
+# Get host and port from argparser
+def getArgs():
+	import argparse
+	parser = argparse.ArgumentParser()
+	parser.add_argument("--host", help="Redis host",
+						default="localhost")
+	parser.add_argument("--port", help="Redis port",
+						default=6379)
+	args = parser.parse_args()
+	return args
+
+host = getArgs().host
+port = getArgs().port
+# print("Redis host:", host, "port:", port)
+
+def getArgsFromEnv(defaultHost = "localhost", defaultPort = 6379):
+	import os
+	host = os.getenv("REDIS_HOST", defaultHost)
+	port = os.getenv("REDIS_PORT", defaultPort)
+	return host, port
+
+host, port = getArgsFromEnv(host, port)
+
+class xoRedis(Expando):
 	_rootName = "Redis"
-	_host = "0.0.0.0"
-	_port = 6379
+	_host = host
+	_port = port
 	_db = 0
 	_namespace = _rootName
 	# def delete(self, id, *args,**kwargs):
 
 	def _init_(self, *args,**kwargs):
 		# print(" WILL INIT REDIS ", self._id, args, kwargs, " ON REDIS")
+		if "host" in kwargs:
+			self._host = kwargs["host"]
+		if "port" in kwargs:
+			self._port = kwargs["port"]
+
+		self._namespace = self._rootName
+		# if self._isRoot: # should work the same
 		if self._parent is None:
-			self._redis = redis.Redis(host=self._host, port=self._port, db=self._db)
+			self._redis = RedisClient(host=self._host, port=self._port, db=self._db)
 
 		self._pubsub = self._getRoot()._redis.pubsub()
 		self._binded = False
 		self._live = False
+
+
 
 		# Init key on redis
 		# return self
@@ -111,7 +152,7 @@ class Redis(Expando):
 	# def _delete_(self, *args,**kwargs):
 	def _delete_(self, element=None, *args, **kwargs):
 		idToDelete = self._id if element == None else self._id+"/"+element
-		print(" WILL DELETE ",  idToDelete,element,  args, kwargs, " FROM REDIS")
+		print(" ::: Deleting ",  idToDelete,element,  args, kwargs, f" from redis ::: db: {self._db} namespace {self._namespace}")
 		target = self
 		if element is not None:
 			target = self[element]
@@ -197,3 +238,16 @@ class Redis(Expando):
 			if msg["type"] == "subscribe":
 				# print(" ::: SUBSCRIBED TO CHANNEL", msg["pattern"])
 				pass
+
+try:
+	_redis = xoRedis("redis", host=host, port=port)
+	print(" ::: Connected to redis server on", _redis._host, ":", _redis._port, " :::")
+except:
+	traceback.print_exc()
+	print(f"Could not connect to redis server, make sure it is running and accessible on {host}:{port}.\n You can also use --host and --port to specify the host and port of the redis server. ")
+	_redis = None
+
+redis = _redis
+# def redis():
+# 	return _redis
+

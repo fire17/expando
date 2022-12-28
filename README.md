@@ -37,11 +37,15 @@ myStore = Expando()
 python3 -m pip install twine 
 # Skip if you have it already
 
-export VERSION=0.5.3
+export VERSION=0.5.4
 # Copy/edit setup.py
 # update setup.py version
 python3 setup.py sdist bdist_wheel
 twine upload dist/*
+
+# to install locally (before twine upload)
+python3 -m pip install --force-reinstall --no-deps . 
+```
 
 ```
 ```

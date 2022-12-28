@@ -88,7 +88,7 @@ class Expando(dict):
 	_rootName = "xo"
 	_valueArg = "value"
 
-	__id = "xxx"
+	_id = "_xxx_"
 
 	# def __assign__(self, v):
 	# 	print('called with %s' % v)
@@ -1251,43 +1251,53 @@ class Expando(dict):
 		return False
 
 	def _checkIfExist_(self, *args, **kwargs):
-		print(" ::: THIS CAN BE OVERLOADED ::: checkIfExist ",
-		      type(self), self._id, args, kwargs)
+		# print(" ::: THIS CAN BE OVERLOADED ::: checkIfExist ",
+		    #   type(self), self._id, args, kwargs)
 		return False
 
 	def _read_(self, *args, **kwargs):
-		print(" ::: THIS CAN BE OVERLOADED ::: read ",
-		      type(self), self._id, args, kwargs)
+		# print(" ::: THIS CAN BE OVERLOADED ::: read ",
+		    #   type(self), self._id, args, kwargs)
 		return self
 		# read = self.read()
 		# if read != self
 		# 	value = read
 
 	def _create_(self, value=None, *args, **kwargs):
-		print(" ::: THIS CAN BE OVERLOADED ::: create ",
-		      type(self), self._id, value, args, kwargs)
+		# print(" ::: THIS CAN BE OVERLOADED ::: create ",
+		#       type(self), self._id, value, args, kwargs)
 		# return self
+		pass
 
 	def _update_(self, value=None, *args, **kwargs):
-		print(" ::: THIS CAN BE OVERLOADED ::: update ",
-		      type(self), self._id, value, args, kwargs)
+		# print(" ::: THIS CAN BE OVERLOADED ::: update ",
+		#       type(self), self._id, value, args, kwargs)
+		pass
 
 	def _subscribe_to_changes_(self, *args, **kwargs):
-		print(" ::: THIS CAN BE OVERLOADED ::: subscribe_to_changes ",
-		      type(self), self._id, args, kwargs)
+		# print(" ::: THIS CAN BE OVERLOADED ::: subscribe_to_changes ",
+		#       type(self), self._id, args, kwargs)
 		# return self
+		pass
 
 	def _delete_(self, element=None, *args, **kwargs):
-		idToDelete = self._id if element == None else element
-		print(" ::: THIS CAN BE OVERLOADED ::: delete ",
-		      type(self), self._id, idToDelete, args, kwargs)
+		idToDelete = self._id if element == None else self._id+"/"+element
+		# print(" ::: THIS CAN BE OVERLOADED ::: delete ",
+		#       type(self), self._id, idToDelete, args, kwargs)
 		return True
 		# return if deleted succesfully
 
+
+
+
+
+
+
+
 	# this was used to update the value of the expando, deprecated. use xo(dict) instead
-	def _update_entries(self, entries, *vars, **kwargs):
+	def x_update_entries(self, entries, *vars, **kwargs):
 		newData = {}
-		print(";;;;;;;;;;;;;:::", entries, vars, kwargs)
+		# print(";;;;;;;;;;;;;:::", entries, vars, kwargs)
 		for d in vars:
 			if "dict" in str(type(d)):
 				# print(";;;;;;;;;;;;;", d)
@@ -1500,7 +1510,7 @@ class Expando(dict):
 
 	#iiiiiiiiiiiiiiii
 	_init_done_ = False
-	def __init__(self, _val=None, _id=None, _parent=None,_rootName=None, _behaviors={}, _xoT_=None, *vars, **entries):
+	def __init__(self, _val=None, _id=None, _parent=None,_rootName=None, _behaviors={}, _xoT_=None, *args, **kwargs):
 		# print(":::::::::::::::IIIIIIIIIIIII::::::::::::::",type(self),_id, _xoT_)
 		# dict.__init__(self,**entries)
 		# dict.__init__(self, *vars, **entries) #
@@ -1512,8 +1522,16 @@ class Expando(dict):
 		# else:
 		# 	super().__init__(self, *vars, **entries)
 		# 	dict.__init__(self, *vars, **entries)
-		super().__init__(self, *vars, **entries)
-		dict.__init__(self, *vars, **entries)
+		if _parent is None and _id is None and _val is not None and isinstance(_val, str):
+			_id = _val
+			_rootName = _val
+			self._rootName = _rootName
+			_val = None
+			print("::: ROOT XO :::", _id)
+		
+
+		super().__init__(self, *args, **kwargs)
+		dict.__init__(self, *args, **kwargs)
 		
 
 		if self is not None:
@@ -1524,6 +1542,7 @@ class Expando(dict):
 		#### def __init__(self):
 		#### es=traceback.extract_stack()
 		# super().__init__(id = id, val = val)
+
 		
 		if _id is None:
 			# print("ddddddddddddd",_xoT_)
@@ -1633,7 +1652,7 @@ class Expando(dict):
 		if self._overloading_():
 			# print("overloading!!!!!!!!!!!", type(self), self._id)
 		
-			self._init_()
+			self._init_(*args, **kwargs)
 
 			if not self._checkIfExist_():
 				# calling create event

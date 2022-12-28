@@ -6,6 +6,6 @@ print(xo)
 
 print("::::::::")
 
-from xo import redis
+from xo.redis import redis
 redis.a = 1 
 print(redis)
