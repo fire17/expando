@@ -2097,7 +2097,9 @@ class Expando(dict):
 			else:
 				skip = True
 				print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", name, self._id,"skip:", skipUpdate,"value:", value,"init_done:", self._init_done_)
-				if not skipUpdate and False:
+				if not skipUpdate and (value is not None or self._init_done_ == True and "_has_value" in self and self._has_value): #and False:
+					print("$$$$$$$$$")
+					self._has_value = True
 					updateTarget._update_(value)
 					print("$$$$$$$$$")
 				print("!!!!!!!")
