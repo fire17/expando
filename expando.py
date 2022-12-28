@@ -441,7 +441,7 @@ class Expando(dict):
 	# 	pass #print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 	# 	pass #print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$xxxxxxxxxxxx")
 
-	def _setValue(self, val, skipInner=False):
+	def _setValue(self, val, skipUpdate=False):
 		# print(self._id, " SETTING VALUE TO " + str(val))
 		
 		if isinstance(val, dict):
@@ -450,10 +450,17 @@ class Expando(dict):
 			# self._recursiveImportDict(_val)
 			val = None
 
-		if True or skipInner or self.set(val):
+		if True or skipUpdate or self.set(val):
 			# set hook
-			self[Expando._valueArg] = val
+			if skipUpdate:
+				self.__setitem__(Expando._valueArg, val, skipUpdate=True)
+			else:
+				self[Expando._valueArg] = val
+
 			object.__setattr__(self, "value", val)
+
+
+			
 			# if name == Expando._valueArg:
 			# 				self[name] = value
 			# 				self[name] = value
@@ -1226,6 +1233,10 @@ class Expando(dict):
 		return self._id
 		# return self.update({**dict(self), **kwargs})
 
+	def _init_(self, *args, **kwargs):
+		# print(" ::: THIS NEEDS TO BE OVERLOADED TO RETURN TRUE::: overloading ")
+		pass
+
 	def _overloading_(self, *args, **kwargs):
 		# print(" ::: THIS NEEDS TO BE OVERLOADED TO RETURN TRUE::: overloading ")
 		return False
@@ -1613,6 +1624,7 @@ class Expando(dict):
 		if self._overloading_():
 			# print("overloading!!!!!!!!!!!", type(self), self._id)
 		
+			self._init_()
 
 			if not self._checkIfExist_():
 				# calling create event
@@ -1809,8 +1821,11 @@ class Expando(dict):
 
 				return atr
 			# else:
-			self[name] = self._xoT_(_id=self._id+"/"+name, _parent=self,
+			res = self._xoT_(_id=self._id+"/"+name, _parent=self,
 						   _behaviors=self._behaviors)
+			self[name] = res
+			# object.__setattr__(res, "value", None)
+
 			return super().__getitem__(name)
 			return self[name]
 
@@ -2041,40 +2056,68 @@ class Expando(dict):
 # 	def __getitem__(self, name):
 # 		return super().__getitem__(name=name)
 
-	def __setitem__(self, name, value, redo = False):
+	def __setitem__(self, name, value, skipUpdate=False):
 		# return self.__setattr__(name=name, value=value)
 		# super().__setattr__(name, Expando(value))
 		if not isinstance(name,str):
 			name = str(name)
-		res = value
-		if (not isinstance(name,str)) or (name not in Expando._hiddenAttr and not name.startswith("_")):
+		res = self
+		updateTarget = self
+		skip = False
+		# if (not isinstance(name,str)) or (name not in Expando._hiddenAttr and not name.startswith("_")):
+		if name not in Expando._hiddenAttr and not name.startswith("_"):
 			if not isinstance(value, Expando) and name not in self:
-				res = self._xoT_(_id=self._id+"/"+str(name), _val=value,
+				updateTarget = self._xoT_(_id=self._id+"/"+str(name), _val=value,
                   _parent=self, _behaviors=self._behaviors)
+			elif name in self:
+				updateTarget = self[name]
+
+			object.__setattr__(self, name, updateTarget)
+
+		else:
+			print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",name)
+			skip = True
+			if name != self._valueArg:
+				skip = True
+			else:
+				updateTarget._update_(value)
+				print("!!!!!!!")
+				time.sleep(.1)
+
 		
 		# set hook
 		# self[name] = res
 		# self[name]._setValue(res)
-		object.__setattr__(self, name, res)
-		if self._init_done_ and self._overloading_():
-			runUpdate = False if name != self._valueArg else True
-			updateTarget = self
-			if (name not in self._hiddenAttr and not name.startswith("_")):
-				# print("222222222222222222222",name, name in self)
-				# res._update_(value)
-				updateTarget = res
-				runUpdate = True
-			if runUpdate:
-				# print("......111111111", value)
-				updateTarget._update_(value)
+		# object.__setattr__(self, name, res)
+		# object.__setattr__(self, name, value)
+		if not skip:
+			if self._init_done_ and self._overloading_() and name not in Expando._hiddenAttr and not name.startswith("_"):
+			# if self._overloading_():
+				runUpdate = False if name != self._valueArg else True
+				# updateTarget = self
+				if (name not in self._hiddenAttr and not name.startswith("_")):
+					print("222222222222222222222",self._id, name, name in self)
+					# res._update_(value)
+					# updateTarget = res
+					runUpdate = True
+				# if runUpdate and not skipUpdate:
+					if runUpdate and not skipUpdate:
+						# print("......111111111", value)
+						updateTarget._update_(value)
+				# else:
+					# print("fuck Yea !!!!!!!!!")
+				object.__setattr__(updateTarget, name, value)
+				# object.__setattr__(self, name, value)
+				# object.__setattr__(updateTarget, "value", value)
 
-			# elif name == self._valueArg:
-			# 	print("5555555555555555555555")
-			# 	self._setValue(value)
-			# else:
-			# 	pass
-		# if redo:
-		# 	return self.__setattr__(name=name, value=value)
+
+				# elif name == self._valueArg:
+				# 	print("5555555555555555555555")
+				# 	self._setValue(value)
+				# else:
+				# 	pass
+			# if redo:
+			# 	return self.__setattr__(name=name, value=value)
 		return super().__setitem__(name, value)
 		# self[name] = value
 		# return self[name]

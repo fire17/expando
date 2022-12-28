@@ -7,5 +7,5 @@ print(xo)
 print("::::::::")
 
 from xo import redis
-redis.a = 1
+redis.a = 1 
 print(redis)

@@ -18,7 +18,7 @@ import json
 
 
 xo = Expando()
-# redis = Redis()
+redis = Redis()
 
 def main():
     # print arguments
