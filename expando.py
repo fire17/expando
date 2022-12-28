@@ -1009,7 +1009,7 @@ class Expando(dict):
 
 	def __call__(self, *args, **kwargs):
 		# print(Expando.__call__ in self._behaviors)
-		# print("CCCCCCCCCCCCC",self,args,kwargs, self._behaviors)
+		print("CCCCCCCCCCCCC",self._id, self.value,args,kwargs)
 		# behave = False
 		# if behave:
 		# 	if "_skip_overload" not in kwargs or kwargs["_skip_overload"] == False:
@@ -1089,6 +1089,8 @@ class Expando(dict):
 		# if "function" in str(type(self[Expando._valueArg])) or "method" in str(type(self[Expando._valueArg])):
 		# print()
 
+		# print("---------1")
+
 		if "value" in self and "function" in str(type(self[self._valueArg])):
 			''' if function is saved in self.value'''
 			# print("!!!!!!!!!!#####",str(type(self[Expando._valueArg])))
@@ -1104,6 +1106,7 @@ class Expando(dict):
 			# print("+++++++",self._id)
 			return self._runFormula()
 
+		# print("---------2")
 		# elif self._valueArg in self and self[self._valueArg] is not None and "function" in str(type(self[Expando._valueArg])):
 		# 	''' if self has formula'''
 		# 	# print("!!!!!!!!!![0]")
@@ -1136,6 +1139,7 @@ class Expando(dict):
 		# 	# return self[Expando._valueArg][0](*vars, **kwargs)
 		# elif "value" in self: # this is not ever running
 		# 	return self[Expando._valueArg] if "value" in self else None
+		# print("---------3")
 		if len(args) > 0 or len(kwargs) > 0:
 			# SET CALL
 			# imported = False
@@ -1143,7 +1147,7 @@ class Expando(dict):
 				# for key in kwargs:
 				# 	self[key] = kwargs[key]
 				# print("YYYYYYYYYYYY")
-				Expando._recursiveImportDict(self, args[0])
+				Expando._recursiveImportDict(self, kwargs)
 				# self._recursiveImportDict(kwargs)
 				# imported = True
 			if len(args) == 1:
@@ -1152,7 +1156,8 @@ class Expando(dict):
 					Expando._recursiveImportDict(self, args[0])
 				else:
 
-					self[self._valueArg] = args[0]
+					# self[self._valueArg] = args[0]
+					# print("02")
 					self._setValue(args[0])
 				# return self
 				# return args[0]
@@ -1167,16 +1172,18 @@ class Expando(dict):
 						# self._recursiveImportDict(a)
 					else:
 						finalValues.append(a)
-				
+				print("01")
 				self._setValue(finalValues)
 				# if imported:
 				# 	return self
 				# return args
+			# print("---------4")
 			return self
 		else:
 			if self._valueArg not in self:
 				self[self._valueArg] = None
 
+			print("---------4.5")
 			return self.getHook()
 			return self[self._valueArg]
 			# self[Expando._valueArg][0](*vars, **kwargs)
@@ -1209,6 +1216,7 @@ class Expando(dict):
 			# ddd =  dict.__init__(self, *vars,**kwargs)
 			# print("tttttttx", ddd, type(ddd))
 			# self._convertAll()
+			print("---------4.6")
 			return ddd
 		# Update new entries
 		# TODO: make this work, update
@@ -1224,6 +1232,7 @@ class Expando(dict):
 		#self.__init__(**{**dict(self), **kwargs})
 		# for
 
+		print("---------5")
 		return self
 
 		# Add the new attributes to the instance's dictionary.
@@ -1658,6 +1667,7 @@ class Expando(dict):
 		# self._update_entries(entries)
 
 		self._init_done_ = True
+		print(":::::::::::::::::::::::::::::::::::::::::", self._id, self._init_done_)
 		pass
 		#### self.xxx.yyy.zzz = 13
 		#### updateID = Thread(target = self.makeID, args = [list,])
@@ -1828,6 +1838,9 @@ class Expando(dict):
 
 			return super().__getitem__(name)
 			return self[name]
+		else:
+			# self[name] = 
+			pass
 
 		# print("!!!!!!!!!!!!!!!", name)
 		return super().__getitem__(name)
@@ -2075,12 +2088,18 @@ class Expando(dict):
 
 
 		else:
-			skip = False
 			if name != self._valueArg:
-				skip = True
+				object.__setattr__(self, name, value)
+				self.__dict__[name] = value
+				# skip = True
+				pass
+				# skip = True
 			else:
-				print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",name)
-				# updateTarget._update_(value)
+				skip = True
+				print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", name, self._id,"skip:", skipUpdate,"value:", value,"init_done:", self._init_done_)
+				if not skipUpdate and False:
+					updateTarget._update_(value)
+					print("$$$$$$$$$")
 				print("!!!!!!!")
 				# time.sleep(1)
 
@@ -2090,7 +2109,7 @@ class Expando(dict):
 		# self[name]._setValue(res)
 		# object.__setattr__(self, name, res)
 		# object.__setattr__(self, name, value)
-		if not skip:
+		if not skip and False:
 			if self._init_done_ and self._overloading_() and name not in Expando._hiddenAttr and not name.startswith("_"):
 			# if self._overloading_():
 				runUpdate = False if name != self._valueArg else True
@@ -2102,7 +2121,7 @@ class Expando(dict):
 					runUpdate = True
 				# if runUpdate and not skipUpdate:
 					if runUpdate and not skipUpdate:
-						# print("......111111111", value)
+						print("......111111111", value)
 						updateTarget._update_(value)
 				# else:
 					# print("fuck Yea !!!!!!!!!")
