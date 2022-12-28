@@ -137,7 +137,7 @@ class Redis(Expando):
 	def _directBind(self, msg, *args, **kwargs):
 		# print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
 		# print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
-		# print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
+		print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu", msg, args, kwargs)
 		# time.sleep(1)
 		if isinstance(msg, dict) and "type" in msg:
 			if "message" in msg["type"]:

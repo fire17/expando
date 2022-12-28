@@ -2069,20 +2069,20 @@ class Expando(dict):
 			if not isinstance(value, Expando) and name not in self:
 				updateTarget = self._xoT_(_id=self._id+"/"+str(name), _val=value,
                   _parent=self, _behaviors=self._behaviors)
+				object.__setattr__(self, name, updateTarget)
 			elif name in self:
 				updateTarget = self[name]
 
-			object.__setattr__(self, name, updateTarget)
 
 		else:
-			print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",name)
-			skip = True
+			skip = False
 			if name != self._valueArg:
 				skip = True
 			else:
-				updateTarget._update_(value)
+				print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",name)
+				# updateTarget._update_(value)
 				print("!!!!!!!")
-				time.sleep(.1)
+				# time.sleep(1)
 
 		
 		# set hook
