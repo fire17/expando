@@ -1,0 +1,9 @@
+setup.py
+xo/__init__.py
+xo/redis.py
+xo.redis.egg-info/PKG-INFO
+xo.redis.egg-info/SOURCES.txt
+xo.redis.egg-info/dependency_links.txt
+xo.redis.egg-info/entry_points.txt
+xo.redis.egg-info/requires.txt
+xo.redis.egg-info/top_level.txt

@@ -1,7 +1,7 @@
 # from expando import *
 # import expando 
 from expando import Expando as Expando
-from xo_redis import Redis
+# from xo.redis import Redis
 import json
 # def reload(m = expando):
 # m = expando
@@ -18,7 +18,7 @@ import json
 
 
 xo = Expando()
-redis = Redis()
+# redis = Redis()
 
 def main():
     # print arguments
