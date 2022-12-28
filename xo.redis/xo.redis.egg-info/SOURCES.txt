@@ -1,6 +1,7 @@
 setup.py
 xo/__init__.py
 xo/redis.py
+xo/xo.py
 xo.redis.egg-info/PKG-INFO
 xo.redis.egg-info/SOURCES.txt
 xo.redis.egg-info/dependency_links.txt

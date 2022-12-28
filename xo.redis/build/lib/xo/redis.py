@@ -4,7 +4,10 @@ import traceback
 from unittest import skip
 from expando import Expando
 from redis import Redis as RedisClient
-xo = Expando()
+# xo = Expando()
+from xo.xo import xo
+# from x import *
+# import x
 
 # import xo
 import dill as pk

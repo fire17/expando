@@ -2,8 +2,8 @@ from setuptools import setup
 
 setup(
     name="xo.redis",
-    version="0.2.2",
-    py_modules=["xo.redis"],
+    version="0.2.4",
+    py_modules=["xo.redis","xo.xo"],
     install_requires=["expando","redis"],
     author="Tami",
     author_email="fire17@gmail.com",
