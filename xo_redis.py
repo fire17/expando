@@ -33,8 +33,11 @@ class Redis(Expando):
 	def _checkIfExist_(self, *args,**kwargs):
 		print(" WILL CHECK IF EXISTS ", self._id, args, kwargs, " ON REDIS")
 		# Check if key exits on redis
+		res = self._getRoot()._redis.exists(self._id)
+		print(f"{self._id} EXISTS "+ str("!" if res else "no") +f" {res}")
+		print("___________________________________")
 		# return True
-		return False
+		return res
 
 	def _read_(self, *args,**kwargs):
 		print(" WILL READ ", self._id, args, kwargs, " ON REDIS")

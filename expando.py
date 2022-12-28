@@ -157,8 +157,9 @@ class Expando(dict):
 	def _recursiveImportDict(self, d):
 		# print(self._id)
 		[self[a]._recursiveImportDict(d[a]) if isinstance(
-			# d[a], dict) else self[a]._setValue(d[a]) if True else None for a in d]
-			d[a], dict) else self.__setattr__(a,d[a]) if True else None for a in d]
+			d[a], dict) else self[a]._setValue(d[a]) if True else None for a in d]
+			# d[a], dict) else self.__setattr__(a,d[a]) if True else None for a in d]
+			# d[a], dict) else self[a](d[a]) if True else None for a in d]
 		# for a in d:
 		# 	if isinstance(d[a], dict):
 		# 		# d[a] = Expando(d[a])
@@ -2083,8 +2084,14 @@ class Expando(dict):
 				updateTarget = self._xoT_(_id=self._id+"/"+str(name), _val=value,
                   _parent=self, _behaviors=self._behaviors)
 				object.__setattr__(self, name, updateTarget)
+				
 			elif name in self:
 				updateTarget = self[name]
+			else:
+				# object.__setattr__(self, name, value)
+				print("???????????????????????????",self._id, type(value))
+				print(self.__dict__)
+				print("???????????????????..........")
 
 
 		else:
