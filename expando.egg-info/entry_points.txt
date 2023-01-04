@@ -1,4 +1,3 @@
 [console_scripts]
 expando = xo:main
 xo = xo:main
-

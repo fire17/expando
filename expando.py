@@ -1184,7 +1184,7 @@ class Expando(dict):
 			if self._valueArg not in self:
 				self[self._valueArg] = None
 
-			print("---------4.5")
+			# print("---------4.5")
 			return self.getHook()
 			return self[self._valueArg]
 			# self[Expando._valueArg][0](*vars, **kwargs)
@@ -1821,6 +1821,16 @@ class Expando(dict):
 		# return super().__getitem__(name)
 		# print("__getitem__", name)
 		# if "str" not in str(type(name)):
+		target = self
+		if "/" in name or "." in name:
+			# print("x PRE", target._id, "name:", name)
+			for channel in name.replace("/",".").split(".")[:-1]:
+				# if c not in f:
+				# 	f[c] = xo()
+				target = target.__getitem__(channel)
+			# print("x POST",target._id)
+			return target.__getitem__(name.replace("/",".").split(".")[-1])
+
 		if not isinstance(name,str):
 			name = str(name)
 		#### return name
@@ -1828,10 +1838,10 @@ class Expando(dict):
 			# self[name] = self._xoT(id=self._id+"/"+name, parent=self)
 			# return self[name]
 			if Expando._valueArg not in self:
-				self[Expando._valueArg] = None
+				target[Expando._valueArg] = None
 
 			### GET HOOK
-			return self.getHook()
+			return target.getHook()
 			return super().__getitem__(name)
 			return self[name]
 
@@ -2097,21 +2107,37 @@ class Expando(dict):
 	def __setitem__(self, name, value, skipUpdate=False):
 		# return self.__setattr__(name=name, value=value)
 		# super().__setattr__(name, Expando(value))
+		# print("..............",name)
 		if not isinstance(name,str):
 			name = str(name)
+
+		target = self
+		if "/" in name or "." in name:
+			# print("x PRE", target._id, "name:", name)
+			for channel in name.replace("/",".").split(".")[:-1]:
+				# if c not in f:
+				# 	f[c] = xo()
+				target = target.__getitem__(channel)
+			# print("x POST",target._id)
+			return target.__setitem__(name.replace("/",".").split(".")[-1], value, skipUpdate=skipUpdate)
+
 		res = self
 		updateTarget = self
 		skip = False
 		# if (not isinstance(name,str)) or (name not in Expando._hiddenAttr and not name.startswith("_")):
 		if name not in Expando._hiddenAttr and not name.startswith("_"):
+			# print("@@@@@@@@@@@",1)
 			if not isinstance(value, Expando) and name not in self:
+				# print("@@@@@@@@@@@",2)
 				updateTarget = self._xoT_(_id=self._id+"/"+str(name), _val=value,
                   _parent=self, _behaviors=self._behaviors)
 				object.__setattr__(self, name, updateTarget)
 				
 			elif name in self:
+				# print("@@@@@@@@@@@",3)
 				updateTarget = self[name]
 			else:
+				# print("@@@@@@@@@@@",4)
 				pass
 				# # object.__setattr__(self, name, value)
 				# print("???????????????????????????",self._id, type(value))
@@ -2120,7 +2146,9 @@ class Expando(dict):
 
 
 		else:
+			# print("..............",name)
 			if name != self._valueArg:
+				# print("@@@11111")
 				object.__setattr__(self, name, value)
 				self.__dict__[name] = value
 				# skip = True
@@ -2138,6 +2166,7 @@ class Expando(dict):
 				# time.sleep(1)
 
 		
+		# print("@@@22222222")
 		# set hook
 		# self[name] = res
 		# self[name]._setValue(res)

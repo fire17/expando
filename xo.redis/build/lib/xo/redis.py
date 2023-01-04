@@ -5,7 +5,14 @@ from unittest import skip
 from expando import Expando
 from redis import Redis as RedisClient
 # xo = Expando()
+
+
+
 from xo.xo import xo
+# from expando
+
+
+
 # from x import *
 # import x
 
@@ -133,11 +140,12 @@ class xoRedis(Expando):
 
 		rootSubscribe = True
 		rootSubscribe = False
+		rootSubscribe = True
 		# Global subscribe, only subscribe when root
 		# print("iiiiiiiiii", self._id)
 		if rootSubscribe and self._parent is None:
+			self._redisSubscribe(key=self._namespace+"*", handler=self._directBind)
 			pass
-			# self._redisSubscribe(key=_namespace+"*", handler=self._directBind)
 		elif not rootSubscribe:
 			# print("!!!!!!!!!!!!")
 			# print("!!!!!!!!!!!!")
@@ -170,7 +178,7 @@ class xoRedis(Expando):
 	# def redisSubscribe(self, key="xo/redis*", handler=lambda msg: print('XXXXXXXXXXXXHandler', msg), *args, **kwargs):
 
 	def _redisSubscribe(self, key="Redis*", handler=lambda msg: print('XXXXXXXXXXXXHandler', msg), *args, **kwargs):
-		# print("UUUUUUUUUUUUUUUUUUUUUUUU", key, handler, args, kwargs)
+		print("UUUUUUUUUUUUUUUUUUUUUUUU", key, handler, args, kwargs)
 		# print("UUUUUUUUUUUUUUUUUUUUUUUU")
 		# print("UUUUUUUUUUUUUUUUUUUUUUUU")
 		# print("UUUUUUUUUUUUUUUUUUUUUUUU")
@@ -192,14 +200,15 @@ class xoRedis(Expando):
 	def _directBind(self, msg, *args, **kwargs):
 		# print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
 		# print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
-		# print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu", msg, args, kwargs)
+		print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu", msg, args, kwargs)
 		# time.sleep(1)
 		if isinstance(msg, dict) and "type" in msg:
 			if "message" in msg["type"]:
 				# do_something with the message
 				channel = msg["channel"].decode().replace(
 					"/", ".")  # .strip("Redis.")  # .split(".")[-1]
-				if channel.startswith(xoRedis._rootName+"."):
+				# if channel.startswith(xoRedis._rootName+"."):
+				if channel.startswith(self._rootName+"."):
 					channel = ".".join(channel.split(".")[1:])  # .split(".")[-1]
 				# print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", msg, args, kwargs)
 				# return message
@@ -212,8 +221,20 @@ class xoRedis(Expando):
 				# EDIT 1
 				# f = xo._GetXO(channel, allow_creation=True)
 				if True:
+					# print("ggggg", channel)
 					# f = self._GetXO(channel, allow_creation=False)
+					# time.sleep(1)
+
 					f = self
+					print("PRE", f._id, "channel:", channel)
+					f = f[channel]
+					# for c in channel.replace("/",".").split("."):
+					# 	# if c not in f:
+					# 	# 	f[c] = xo()
+					# 	f = f[c]
+					print("POST",f._id)
+					
+					# print("ggggg2")
 
 					# f = xo[msg["channel"].decode().strip("xo/").replace("/", ".")]
 					# f[channel] = msg["data"]
