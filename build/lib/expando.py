@@ -1822,14 +1822,16 @@ class Expando(dict):
 		# print("__getitem__", name)
 		# if "str" not in str(type(name)):
 		target = self
-		if "/" in name or "." in name:
+		if "/" in name:
 			# print("x PRE", target._id, "name:", name)
-			for channel in name.replace("/",".").split(".")[:-1]:
+			# for channel in name.replace("/",".").split(".")[:-1]:
+			for channel in name.split("/")[:-1]:
 				# if c not in f:
 				# 	f[c] = xo()
 				target = target.__getitem__(channel)
 			# print("x POST",target._id)
-			return target.__getitem__(name.replace("/",".").split(".")[-1])
+			# return target.__getitem__(name.replace("/",".").split(".")[-1])
+			return target.__getitem__(name.split("/")[-1])
 
 		if not isinstance(name,str):
 			name = str(name)
@@ -2112,14 +2114,16 @@ class Expando(dict):
 			name = str(name)
 
 		target = self
-		if "/" in name or "." in name:
+		if "/" in name:
 			# print("x PRE", target._id, "name:", name)
-			for channel in name.replace("/",".").split(".")[:-1]:
+			# for channel in name.replace("/",".").split(".")[:-1]:
+			for channel in name.split("/")[:-1]:
 				# if c not in f:
 				# 	f[c] = xo()
 				target = target.__getitem__(channel)
 			# print("x POST",target._id)
-			return target.__setitem__(name.replace("/",".").split(".")[-1], value, skipUpdate=skipUpdate)
+			# return target.__setitem__(name.replace("/",".").split(".")[-1], value, skipUpdate=skipUpdate)
+			return target.__setitem__(name.split("/")[-1], value, skipUpdate=skipUpdate)
 
 		res = self
 		updateTarget = self

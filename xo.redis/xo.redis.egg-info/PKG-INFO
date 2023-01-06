@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: xo.redis
-Version: 0.2.5
+Version: 0.2.5.1
 Summary: Use redis db as an object. expando like a dictionary or an object
 Home-page: https://github.com/fire17/xo.redis
 Author: Tami

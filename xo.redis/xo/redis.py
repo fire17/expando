@@ -178,7 +178,7 @@ class xoRedis(Expando):
 	# def redisSubscribe(self, key="xo/redis*", handler=lambda msg: print('XXXXXXXXXXXXHandler', msg), *args, **kwargs):
 
 	def _redisSubscribe(self, key="Redis*", handler=lambda msg: print('XXXXXXXXXXXXHandler', msg), *args, **kwargs):
-		print("UUUUUUUUUUUUUUUUUUUUUUUU", key, handler, args, kwargs)
+		# print("UUUUUUUUUUUUUUUUUUUUUUUU", key, handler, args, kwargs)
 		# print("UUUUUUUUUUUUUUUUUUUUUUUU")
 		# print("UUUUUUUUUUUUUUUUUUUUUUUU")
 		# print("UUUUUUUUUUUUUUUUUUUUUUUU")
@@ -200,7 +200,7 @@ class xoRedis(Expando):
 	def _directBind(self, msg, *args, **kwargs):
 		# print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
 		# print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
-		print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu", msg, args, kwargs)
+		# print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu", msg, args, kwargs)
 		# time.sleep(1)
 		if isinstance(msg, dict) and "type" in msg:
 			if "message" in msg["type"]:
@@ -226,13 +226,13 @@ class xoRedis(Expando):
 					# time.sleep(1)
 
 					f = self
-					print("PRE", f._id, "channel:", channel)
+					# print("PRE", f._id, "channel:", channel)
 					f = f[channel]
 					# for c in channel.replace("/",".").split("."):
 					# 	# if c not in f:
 					# 	# 	f[c] = xo()
 					# 	f = f[c]
-					print("POST",f._id)
+					# print("POST",f._id)
 					
 					# print("ggggg2")
 
