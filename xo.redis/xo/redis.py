@@ -198,9 +198,9 @@ class xoRedis(Expando):
 
 	# TODO: Also, implement option to lazy load, (set _needsUpdate or something like so)
 	def _directBind(self, msg, *args, **kwargs):
-		print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
-		print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
-		print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu", msg, args, kwargs)
+		# print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
+		# print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
+		# print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu", msg, args, kwargs)
 		# time.sleep(1)
 		if isinstance(msg, dict) and "type" in msg:
 			if "message" in msg["type"]:
@@ -225,14 +225,14 @@ class xoRedis(Expando):
 					# time.sleep(1)
 
 					f = self
-					print("PRE", f._id, "channel:", channel)
+					# print("PRE", f._id, "channel:", channel)
 					# f = f[channel]
 					for c in channel.split("/"):
 						print("c:",c)
 						# if c not in f:
 						# 	f[c] = xo()
 						f = f[c]
-					print("POST",f._id)
+					# print("POST",f._id)
 					
 					# print("ggggg2")
 
