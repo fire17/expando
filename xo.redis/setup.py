@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="xo.redis",
-    version="0.2.5.1",
+    version="0.2.5.2",
     py_modules=["xo.redis","xo.xo"],
     install_requires=["expando","redis"],
     author="Tami",
