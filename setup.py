@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="expando",
-    version="0.5.5.2",
+    version="0.5.5.4",
     py_modules=["expando","xo"],
     install_requires=[],
     author="Tami",

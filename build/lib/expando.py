@@ -444,12 +444,13 @@ class Expando(dict):
 
 	def _setValue(self, val, skipUpdate=False):
 		# print(self._id, " SETTING VALUE TO " + str(val))
-		
-		if isinstance(val, dict):
-			# self._recursiveImportDict(_val)
-			Expando._recursiveImportDict(self, val)
-			# self._recursiveImportDict(_val)
-			val = None
+		convertDictToExpando = False
+		if convertDictToExpando:
+			if isinstance(val, dict):
+				# self._recursiveImportDict(_val)
+				Expando._recursiveImportDict(self, val)
+				# self._recursiveImportDict(_val)
+				val = None
 
 		if True or skipUpdate or self.set(val):
 			# set hook
@@ -460,8 +461,6 @@ class Expando(dict):
 
 			object.__setattr__(self, "value", val)
 
-
-			
 			# if name == Expando._valueArg:
 			# 				self[name] = value
 			# 				self[name] = value
@@ -472,6 +471,8 @@ class Expando(dict):
 			# 				object.__setattr__(self, name, self._xoT(
 			# 					id=self._id+"/"+name, val=value, parent=self))
 			self._updateSubscribers_(val)
+			#TODO: 3 maybe fixes the setitem problem ?!?!?!
+			# self._update_(val)
 		# print(self)
 
 	def __xgetstate__(self):
@@ -1152,13 +1153,17 @@ class Expando(dict):
 				# self._recursiveImportDict(kwargs)
 				# imported = True
 			if len(args) == 1:
-				if isinstance(args[0], dict):
-					# print("XXXXXXXXXXXXXXXXX")
-					Expando._recursiveImportDict(self, args[0])
-				else:
+				convertDictToExpando = False
+				if convertDictToExpando:
+					if isinstance(args[0], dict):
+						# print("XXXXXXXXXXXXXXXXX")
+						Expando._recursiveImportDict(self, args[0])
+					else:
 
-					# self[self._valueArg] = args[0]
-					# print("02")
+						# self[self._valueArg] = args[0]
+						# print("02")
+						self._setValue(args[0])
+				else:
 					self._setValue(args[0])
 				# return self
 				# return args[0]
@@ -1167,13 +1172,17 @@ class Expando(dict):
 				# self[self._valueArg] = args
 				finalValues = []
 				for a in args:
-					if isinstance(a, dict):
-						# print("zzzzzzzzzzzz")
-						Expando._recursiveImportDict(self, a)
-						# self._recursiveImportDict(a)
+					convertDictToExpando = False
+					if convertDictToExpando:
+						if isinstance(a, dict):
+							# print("zzzzzzzzzzzz")
+							Expando._recursiveImportDict(self, a)
+							# self._recursiveImportDict(a)
+						else:
+							finalValues.append(a)
 					else:
 						finalValues.append(a)
-				print("01")
+				# print("01")
 				self._setValue(finalValues)
 				# if imported:
 				# 	return self
@@ -1739,11 +1748,17 @@ class Expando(dict):
 		# 	print("XXSXSXSXSXSXSXSXSX")
 		# 	print("XXSXSXSXSXSXSXSXSX")
 
-		if isinstance(value, dict) and "Expando" not in str(type(value)) and not name.startswith("_"):
-			# cast dict to Expando
-			# print("CASTING TO EXPANDO, name=", name)
-			# value = Expando(value)
-			value = self._xoT_(value)
+		convertDictToExpando = False
+		if convertDictToExpando:
+			if isinstance(value, dict) and "Expando" not in str(type(value)) and not name.startswith("_"):
+				# cast dict to Expando
+				# print("CASTING TO EXPANDO, name=", name)
+				# value = Expando(value)
+
+				#TODO: fix setting by dict
+				print(f"$$$ should have turned to {self._xoT_}")
+			elif False:
+				value = self._xoT_(value)
 		# print("st3")
 		# if name in self and name not in Expando._hiddenAttr and (not name.startswith("_") or name == Expando._valueArg):
 		behave = False
@@ -2140,6 +2155,8 @@ class Expando(dict):
 			elif name in self:
 				# print("@@@@@@@@@@@",3)
 				updateTarget = self[name]
+				# TODO: maybe fixes setitem bug 
+				# object.__setattr__(self, name, updateTarget)
 			else:
 				# print("@@@@@@@@@@@",4)
 				pass
@@ -2158,6 +2175,8 @@ class Expando(dict):
 				# skip = True
 				pass
 				# skip = True
+				# TODO: maybe fix setitem bug
+				# updateTarget._update_(value)
 			else:
 				skip = True
 				# print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", name, self._id,"skip:", skipUpdate,"value:", value,"init_done:", self._init_done_)
