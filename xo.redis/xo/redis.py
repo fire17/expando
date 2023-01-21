@@ -228,7 +228,7 @@ class xoRedis(Expando):
 					# print("PRE", f._id, "channel:", channel)
 					# f = f[channel]
 					for c in channel.split("/"):
-						print("c:",c)
+						# print("c:",c)
 						# if c not in f:
 						# 	f[c] = xo()
 						f = f[c]
