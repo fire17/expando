@@ -66,7 +66,14 @@ class xoRedis(Expando):
 		self._namespace = self._rootName
 		# if self._isRoot: # should work the same
 		if self._parent is None:
-			self._redis = RedisClient(host=self._host, port=self._port, db=self._db)
+			if "host" not in kwargs:
+				kwargs["host"] = self._host
+			if "port" not in kwargs:
+				kwargs["port"] = self._port
+			if "db" not in kwargs:
+				kwargs["db"] = self._db
+			# self._redis = RedisClient(host=self._host, port=self._port, db=self._db)
+			self._redis = RedisClient(**kwargs)
 
 		self._pubsub = self._getRoot()._redis.pubsub()
 		self._binded = False
