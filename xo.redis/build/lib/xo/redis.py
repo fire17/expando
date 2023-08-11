@@ -20,7 +20,9 @@ from xo.xo import xo
 import dill as pk
 
 defaultRedisConfig = {
-	"host" : "0.0.0.0",
+	# "host" : "0.0.0.0",
+	"host" : "localhost",
+	# "port" : 6379,
 	"port" : 6379,
 }
 
@@ -30,9 +32,9 @@ def getArgs():
 	import argparse
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--host", help="Redis host",
-						default="localhost")
+						default=defaultRedisConfig["host"])
 	parser.add_argument("--port", help="Redis port",
-						default=6379)
+						default=defaultRedisConfig["host"])
 	args = parser.parse_args()
 	return args
 
@@ -40,7 +42,7 @@ host = getArgs().host
 port = getArgs().port
 # print("Redis host:", host, "port:", port)
 
-def getArgsFromEnv(defaultHost = "localhost", defaultPort = 6379):
+def getArgsFromEnv(defaultHost = host, defaultPort = port):
 	import os
 	host = os.getenv("REDIS_HOST", defaultHost)
 	port = os.getenv("REDIS_PORT", defaultPort)
@@ -56,12 +58,15 @@ class xoRedis(Expando):
 	_namespace = _rootName
 	# def delete(self, id, *args,**kwargs):
 
-	def _init_(self, *args,**kwargs):
+	def _init_(self, host=host,port=port, *args, **kwargs):
 		# print(" WILL INIT REDIS ", self._id, args, kwargs, " ON REDIS")
-		if "host" in kwargs:
-			self._host = kwargs["host"]
-		if "port" in kwargs:
-			self._port = kwargs["port"]
+		# if "host" in kwargs:
+		# 	self._host = kwargs["host"]
+		# if "port" in kwargs:
+		# 	self._port = kwargs["port"]
+		self._host = kwargs["host"] if "host" in kwargs else host
+		self._port = kwargs["port"] if "port" in kwargs else port
+		
 
 		self._namespace = self._rootName
 		# if self._isRoot: # should work the same
@@ -73,8 +78,16 @@ class xoRedis(Expando):
 			if "db" not in kwargs:
 				kwargs["db"] = self._db
 			# self._redis = RedisClient(host=self._host, port=self._port, db=self._db)
-			self._redis = RedisClient(**kwargs)
-
+			# self._redis = RedisClient(**kwargs)
+			try:
+				self._redis = RedisClient(**kwargs)
+				success = self._redis.ping()
+				if not success:
+					print(f"Failed to connect to Redis at {self._host}:{self._port}")
+			except Exception as e:
+				# print(f"Failed to connect to Redis at {self._host}:{self._port} with error: {e.}")
+				print(f"Failed to connect to Redis at {self._host}:{self._port} with error")
+			
 		self._pubsub = self._getRoot()._redis.pubsub()
 		self._binded = False
 		self._live = False
@@ -91,11 +104,19 @@ class xoRedis(Expando):
 	def _checkIfExist_(self, *args,**kwargs):
 		# print(" WILL CHECK IF EXISTS ", self._id, args, kwargs, " ON REDIS")
 		# Check if key exits on redis
-		res = self._getRoot()._redis.exists(self._id)
+		try:
+			print("ccccccccccccccccccheckifexist...............")
+			res = self._getRoot()._redis.exists(self._id)
+			return res
+		except Exception as e:
+			# print(f"Failed to connect to Redis at {self._host}:{self._port} with error: {e.}")
+			print(f"Redis is not connected")
+			return False
+
 		# print(f"{self._id} EXISTS "+ str("!" if res else "no") +f" {res}")
 		# print("___________________________________")
 		# return True
-		return res
+		# return res
 
 	def _read_(self, *args,**kwargs):
 		# print(" WILL READ ", self._id, args, kwargs, " ON REDIS")
@@ -190,18 +211,24 @@ class xoRedis(Expando):
 		# print("UUUUUUUUUUUUUUUUUUUUUUUU")
 		# print("UUUUUUUUUUUUUUUUUUUUUUUU")
 		# print(" ::: SUBSCRIBING TO REDIS CHANNEL", key, ":::", )
-		self._pubsub.psubscribe(**{key: handler})
+		try:
+			self._pubsub.psubscribe(**{key: handler})
 		# pubsub.psubscribe(key = key, handler = handler)
 		# pubsub.subscribe(subscribe_key)
 		# pubsub.subscribe(key)
 		# pubsub.subscribe(**{key: event_handler if handler is None else handler})
 		# print("........00000")
-		self._pubsub.run_in_thread(sleep_time=.00001, daemon=True)
+			self._pubsub.run_in_thread(sleep_time=.00001, daemon=True)
+		except Exception as e:
+			# print(f"Failed to connect to Redis at {self._host}:{self._port} with error: {e.}")
+			print(f"Failed: Redis is not connected")
+			return False
 		# for item in pubsub.listen():
 		#     print(item, type(item))
 		#     if item['type'] == 'message':
 		#         print(item['data'])
 		# print("DONE")
+		
 
 	# TODO: Also, implement option to lazy load, (set _needsUpdate or something like so)
 	def _directBind(self, msg, *args, **kwargs):
@@ -271,14 +298,15 @@ class xoRedis(Expando):
 				pass
 
 try:
-	_redis = xoRedis("redis", host=host, port=port)
-	print(" ::: Connected to redis server on", _redis._host, ":", _redis._port, " :::")
+	# _redis = xoRedis("redis", host=host, port=port)
+	# print(" ::: Connected to redis server on", _redis._host, ":", _redis._port, " :::")
+	pass # dont run immediatley 
 except:
 	traceback.print_exc()
 	print(f"Could not connect to redis server, make sure it is running and accessible on {host}:{port}.\n You can also use --host and --port to specify the host and port of the redis server. ")
-	_redis = None
+	# _redis = None
 
-redis = _redis
+# redis = _redis
 # def redis():
 # 	return _redis
 

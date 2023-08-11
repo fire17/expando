@@ -9,7 +9,7 @@ Dynamic Dictionary Object Wrapper
 ## Installation/Update
 
 ```python
-python3 -m pip install --upgrade expando
+python3 -m pip install --upgrade expando xo.redis
 ```
 
 ## import
@@ -38,7 +38,7 @@ python3 -m pip install twine
 # Skip if you have it already
 
 export VERSION=0.5.5.1
-# for xo.redis: export VERSION=0.2.5.3
+# for xo.redis: export VERSION=0.2.5.5
 # Copy/edit setup.py
 # update setup.py version
 python3 setup.py sdist bdist_wheel
